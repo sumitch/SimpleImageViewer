@@ -11,8 +11,6 @@ Pod::Spec.new do |s|
   s.source = { :git => "https://github.com/aFrogleap/SimpleImageViewer.git", :tag => s.version.to_s }
   s.source_files = "ImageViewer/**/*.{swift}"
   s.resources = ["ImageViewer/**/*.{xib}", "ImageViewer/**/*.{xcassets}"]
-  
-  s.dependency 'SDWebImage', '~> 4'
-  s.dependency 'SDWebImage/GIF'
 
+  s.dependency 'FLAnimatedImage'
 end
