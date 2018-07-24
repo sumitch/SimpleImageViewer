@@ -6,6 +6,13 @@ public final class ImageViewerController: UIViewController {
     @IBOutlet fileprivate var scrollView: UIScrollView!
     @IBOutlet fileprivate var imageView: FLAnimatedImageView!
     @IBOutlet fileprivate var activityIndicator: UIActivityIndicatorView!
+
+    @IBOutlet fileprivate var closeButton: UIButton! {
+        didSet {
+            closeButton.isUserInteractionEnabled = false
+            closeButton.alpha = 0.0
+        }
+    }
     
     fileprivate var transitionHandler: ImageViewerTransitioningHandler?
     fileprivate let configuration: ImageViewerConfiguration?
@@ -67,9 +74,15 @@ private extension ImageViewerController {
     }
     
     func setupGestureRecognizers() {
+        let doubleTapGestureRecognizer = UITapGestureRecognizer()
+        doubleTapGestureRecognizer.numberOfTapsRequired = 2
+        doubleTapGestureRecognizer.addTarget(self, action: #selector(imageViewDoubleTapped))
+        imageView.addGestureRecognizer(doubleTapGestureRecognizer)
+
         let tapGestureRecognizer = UITapGestureRecognizer()
-        tapGestureRecognizer.numberOfTapsRequired = 2
-        tapGestureRecognizer.addTarget(self, action: #selector(imageViewDoubleTapped))
+        tapGestureRecognizer.numberOfTapsRequired = 1
+        tapGestureRecognizer.require(toFail: doubleTapGestureRecognizer)
+        tapGestureRecognizer.addTarget(self, action: #selector(imageViewTapped))
         imageView.addGestureRecognizer(tapGestureRecognizer)
         
         let panGestureRecognizer = UIPanGestureRecognizer()
@@ -108,6 +121,17 @@ private extension ImageViewerController {
     
     @IBAction func closeButtonPressed() {
         dismiss(animated: true)
+    }
+
+    @objc func imageViewTapped() {
+        UIView.animate(withDuration: 0.25) { [weak closeButton] in
+            guard let closeButton = closeButton else {
+                return
+            }
+
+            closeButton.alpha =             closeButton.isUserInteractionEnabled ? 0 : 1
+            closeButton.isUserInteractionEnabled = !closeButton.isUserInteractionEnabled
+        }
     }
     
     @objc func imageViewDoubleTapped() {
